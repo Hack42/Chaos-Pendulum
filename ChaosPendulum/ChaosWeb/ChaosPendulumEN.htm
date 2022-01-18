@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+
+
+  
+  
+<link rel="stylesheet" type="text/css" href="format-1.css">
+
+
+  
+  
+<meta content="text/html; charset=windows-1252" http-equiv="content-type">
+<title>Chaos Pendulum</title>
+</head><body>
+<br>
+
+
+<div id="navbar"><br>
+</div>
+
+
+<div id="content">
+<h2>Chaos Pendulum
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <small style="font-weight: normal;"><small>Latest change 2021-10-06
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  </small></small><a href="ChaosSlingerNL.htm"><img style="border: 0px solid ; width: 36px; height: 27px;" src="Chaos-Files/vlag_nl.gif" alt="vlag_nl.gif"></a></h2>
+<h2>
+</h2>
+<p class="MsoNormal"><span style="font-family: Arial;"></span></p>
+<hr style="width: 100%; height: 2px;">
+<p class="MsoNormal"><span style="font-family: Arial;">An ordinary
+single
+pendulum shows a very regular behaviour, we use it in many
+mechanical
+clocks for pretty good timekeeping.<o:p></o:p><br>
+<o:p></o:p>If you mount a second
+pendulum on the weight of a first you will have a chaos system.<o:p></o:p></span><br>
+The behaviour of such a
+system is extremely dependent on the starting condition and -as any
+moment can
+be regarded as the starting condition for what follows- the system will
+continue to be chaotic.<br>
+<span style="font-family: Arial;">The
+chaotic behaviour
+comes from the energy exchange between the main- and the second
+pendulum, not
+from any kind of random noise or the like.<br>
+</span></p>
+<p class="MsoNormal"><span style="font-family: Arial;">This
+pendulum is
+electrically driven to compensate for the friction losses, but in such
+a way
+that chaos is not promoted. The main pendulum gets a push in the right
+direction every time it passes the lowest point of its orbit. The
+second
+pendulum has no drive of its own.</span></p>
+<p class="MsoNormal"><span style="font-family: Arial;">This pendulum is
+built
+from some parts from a dismantled harddisk, the
+case, the disk-motor and
+the bearing of the head lever.</span> And it took some machining of pieces aluminium I happened to have in stock.<span style="font-family: Arial;"> <br>
+The electrical drive is controlled by an
+Arduino
+Nano.</span><br>
+<br>
+
+</p>
+<p class="MsoNormal"><a href="Chaos-Files/Aanzicht.jpg"><img style="border: 0px solid ; width: 400px; height: 533px;" src="Chaos-Files/Aanzicht-tmb.jpg" alt="Aanzicht-tmb.jpg"></a><br>
+</p>Front view.&nbsp; Click for larger.<br>
+<br>
+
+<p class="MsoNormal"><a href="Chaos-Files/Inside.jpg"><img style="border: 0px solid ; width: 400px; height: 556px;" src="Chaos-Files/Inside-tmb.jpg" alt="Inside-tmb.jpg"></a><br>
+
+<br>
+Interior. On top the power fets above the motor which protrudes out of the backside, on the lower left the Nano en
+besides that the opto-interruptors. On the right the 3 leds for the phases. <br>
+Click for larger.<br>
+
+</p>
+
+
+<img src="Chaos-Files/Schema.jpg" alt="Schema.jpg"><br>
+<p class="MsoNormal">The electrical schema. None of the components is
+critical. Select the power FET's for gate-on threshold &lt; 3Volts.
+Resistors should be chosen for suitable LED brightness. The power
+supply should be able to deliver 2 A minimal.</p>
+<hr style="width: 100%; height: 2px;">
+<span style="font-weight: bold;">The drive control works
+as follows:</span><br>On
+both sides of the Lower Dead Point (LDP) optical shutters A and B
+are mounted to measure the direction and the velocity of the main
+pendulum when it passes. After each pass the motor is activated in the
+proper direction during a time which depends on the measured velocity.<br>
+The motor has 3 phases and 4 poles, so the mechanical angle between two
+successive phases is 30°. The angle between the shutters is 5.7°.<br>
+<h2 style="font-weight: normal;"><img src="Chaos-Files/MotorPhases.jpg" alt="MotorPhases.jpg"></h2>
+Suppose the LDP is in line with the V-phase as in the drawing. At a
+pass from left to right we must activate the W-phase, but not longer
+than until the pendulum passes beyond the W-point, because then it would
+be pulled back again.<br>
+Measuring the velocity is done by sampling the optical shutters at a 4
+kHz rate. During a pass we find a number of N counts for the 5.7° pass.<br>
+We activate the W-phase at 5.7 / 2 = 2.35°. Suppose that the pendulum
+continues at the same speed (which is not true) we should deactivate
+the W phase at 30°. That is N * (30 - 2.35) / 5.7 = N * 4.85 counts
+later. The expectation/purpose is that the pendulum accellerates during
+that time, so we have to switch off somewhat earlier, a factor of 4
+appeared to work well. The advantage of a whole numer is also that we
+do not need floating point calculations.<br>
+It appeared that this way not enough energy was pumped into the system.
+So a second push was realized by switching on the U-phase after
+deactivating the W-phase. This lasts somewhat shorter, a factor of 3 *
+N counts works well.<br>
+When the pass is in the other direction everything goes the other way
+around.<br>
+<br>
+Now we must take care that the pendulum does not accumulate to much
+energy. The indication for that is when the main pendulum makes several
+complete loopings in succesion in the same direction. We detect this by counting the
+number of passes AB and BA, and if we have seen more than X the same
+pass the activation of the motor is suspended. If we then see a pass
+in the other direction that counter is zeroed again, which releases the suspend. <br>
+X = 4 appears to
+work well.<br>
+<br>
+We must also organize that the system starts moving, independent from where
+the pendulum sits still (*).The firmware can differentiate between 3
+locations, on the A shutter, on the B shutter or elsewhere. For all
+these situations there is a test, if that position is kept to long
+(over 8 seconds), one of the motor phases is activated for a while. Now
+it could be that the pendulum sits in line with that phase, so nothing
+will happen. That situation is anticipated by activating another phase
+at the next try.<br>
+<br>
+During the devleopment serial communication has been used for
+diagnostics. When everything worked well this has been changed into
+output which can be directly used for logging in a comma separated file
+which can be processed further.<br>
+<br>
+(*) Also during the normal chaotic movements the pendulum could come to
+a standstill in the upper dead point. In spite of this being an
+instable balance the system might stall there because of small fricton
+in the bearings. <br>
+<br>
+</div>
+
+
+</body></html>

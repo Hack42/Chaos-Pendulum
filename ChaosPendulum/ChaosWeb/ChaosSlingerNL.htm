@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+
+
+
+
+  
+  
+<link rel="stylesheet" type="text/css" href="format-1.css">
+
+
+  
+  
+<meta content="text/html; charset=windows-1252" http-equiv="content-type">
+<title>Chaos Slinger</title>
+</head><body>
+<br>
+
+
+<div id="navbar"><br>
+</div>
+
+
+<div id="content">
+<h2>Chaos Slinger
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <small style="font-weight: normal;"><small>Laatste
+wijziging 2021-10-06 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</small></small><a href="ChaosPendulumEN.htm"><img style="border: 0px solid ; width: 36px; height: 27px;" src="Chaos-Files/vlag_en.gif" alt="vlag_en.gif"></a>
+</h2>
+<hr style="width: 100%; height: 2px;">
+
+<p class="MsoNormal"><span style="font-family: Arial;">Een
+gewone enkelvoudige slinger vertoont een zeer regelmatig gedrag, we
+gebruiken 'm in veel mechanische klokken voor behoorlijk
+nauwkeurige
+tijdmeting.<br>
+Als je een tweede slinger aan het gewicht van een eerste bevestigt
+krijg je
+een chaos systeem.<o:p></o:p><br>
+Het gedrag van zo'n systeem is extreem afhankelijk van de begin
+conditie en
+-aangezien elk moment beschouwd kan worden als de beginconditie voor
+wat er
+gaat volgen- zal het systeem chaotisch blijven.<o:p></o:p><br>
+Het chaotische gedrag komt voort uit de energie uitwisseling tussen de
+hoofdslinger en de nevenslinger, niet uit de een of ander vorm van ruis
+of andere toevalsfactor.<o:p></o:p><br>
+Deze slinger wordt elektrisch aangedreven om de wrijvingsverliezen te
+compenseren, maar zo dat er geen chaos bevorderd wordt.<span style=""> </span>De hoofdslinger krijgt elke keer dat 'ie het
+laagste punt passeert een zet in de goede richting. De tweede slinger
+heeft
+geen eigen aandrijving.<o:p></o:p><br>
+Deze slinger is opgebouwd uit enkele onderdelen van een gesloopte
+harddisk, zoals<span style=""> </span>de disk-motor en
+het lager van de koppen-arm. </span><span style="font-family: Arial;">En er was wat draai- en freeswerk nodig aan stukken aluminium die ik toevallig had liggen</span><span style="font-family: Arial;">. De kleurtjes zijn aangebracht door anodiseren.<br>
+De aandrijving wordt bestuurd door een
+Arduino
+Nano..</span><br>
+<span style="font-family: Arial;"><o:p></o:p></span></p>
+
+<a href="Chaos-Files/Aanzicht.jpg"><img style="border: 0px solid ; width: 400px; height: 533px;" src="Chaos-Files/Aanzicht-tmb.jpg" alt="Aanzicht-tmb.jpg"></a><br>
+Uitwendige. Klik voor groter.<br>&nbsp;
+<br>
+<br>
+<a href="Chaos-Files/Inside.jpg"><img style="border: 0px solid ; width: 400px; height: 556px;" src="Chaos-Files/Inside-tmb.jpg" alt="Inside-tmb.jpg"></a><br>&nbsp;<br>
+Inwendige. Bovenaan de powerfets boven de motor die omgekeerd
+gemonteerd is zodat 'ie naar achter uitsteekt, linksonder de Nano,
+daarnaast de opto-sluisjes, en rechts de 3 leds voor de fasen.<br>
+Klik voor groter.<br>
+<br><img src="Chaos-Files/Schema.jpg" alt="Schema.jpg">
+<br>
+<br>
+Het elektrische schema. Geen van de componenten is critisch. Kies power FET's met gate-on threshold &lt; 3 Volt.<br>
+Weerstanden dienen aangepast te worden voor de gewenste helderheid van de leds. De voeding moet minimaal 2 A kunnen leveren.<br>
+<br>
+<span style="font-weight: bold;"></span>
+<hr style="width: 100%; height: 2px;"><span style="font-weight: bold;">De aandrijving gaat als volgt:</span><br>
+Ter weerszijde van het Onderste Dode Punt (ODP) zitten lichtsluisjes
+A en B waarmee gemeten wordt in welke richting en met welke snelheid de
+slinger passeert. Na iedere passage wordt de motor geactiveerd in de
+goede richting gedurende een tijd die afhangt van de gemeten snelheid.<br>
+De motor heeft 3 fasen en 4 polen, de mechanische hoek tussen twee
+opvolgende fasen is dus 30°. De hoek tussen de lichtsluisjes is 5.7
+graden.<br>
+<br>
+<img src="Chaos-Files/MotorPhases.jpg" alt="MotorPhases.jpg"><br>
+<br>
+Veronderstel dat het ODP uitgelijnd is met de V-fase als in de
+tekening. We moeten dan bij een doorgang van links naar rechts de
+W-fase activeren, maar niet langer dan dat de slinger voorbij het
+W-punt komt, want dan zou 'ie weer teruggetrokken worden.<br>
+Het meten van de snelheid gebeurt door in een 4 kHz tempo de
+optosluisje te besnuffelen. We vinden dan een aantal counts N gedurende
+die doorloop van 5.7 graden. We activeren de W-fase op 5.7 / 2 = 2.35°.
+Even aangenomen dat de slinger met dezelfde snelheid verder gaat (dat
+is niet zo, daar gaat het juist om) zou de W fase bij 30° afgeschakeld
+moeten worden. Dat is N * (30 - 2.35) / 5.7 = N * 4.85 counts later. De
+verwachting/bedoeling is dat de slinger in die tijd wat versnelt, dus
+moeten we wat eerder afschakelen, een factor 4 blijkt goed te werken.
+Een heel getal heeft ook het voordeel dat er geen drijvende
+kommaberekeningen nodig zijn.<br>
+Gebleken is dat er hiermee te weinig energie in het systeem komt.
+Daarom is er een tweede duw gerealiseerd door na het afschakelen van de
+W-fase de U-fase te activeren, wel wat korter, een factor 3 * N counts
+blijkt goed te werken. <br>
+Bij de overgang in de andere richting gaat alles in de omgekeerde
+volgorde.<br>
+<br>
+Nu moeten we er voor zorgen dat de slingers niet teveel energie
+opzamelen. Het teken daarvoor is als de hoofdslinger meerdere malen
+achter elkaar "over de kop" gaat. We detecteren dit door overgangen AB
+en BA te tellen, iedere keer als we meer dan X overgangen AB c.q. BA
+achter elkaar gezien hebben wordt het bekrachtigen van de motor overgeslagen. Als we dan weer een overgang in de andere richting
+gezien hebben wordt die teller weer op nul gezet. X = 4 blijkt te
+voldoen.<br>
+<br>We moeten ook zorgen dat het systeem op gang komt, ongeacht waar de
+slinger stil staat (*). De firmware kan onderscheid maken tussen 3
+plaatsen, op de A
+sluis, op de B sluis of ergens anders. Voor al deze situaties wordt er
+getest of die positie niet te lang (ca. 8 seconden) aangehouden wordt.
+Zoja dan wordt 1 van de motor fasen even aangestuurd. Nu zou het kunnen
+gebeuren dat de slinger net in lijn staat met die fase, waardoor er
+niets gebeurt. Dat wordt ondervangen door bij een volgende poging een
+andere motor-fase te activeren.<br>
+<br>
+Tijdens de ontwikkeling is er seriële communicatie gebruikt voor
+diagnostiek. Toen alles goed werkte is dat veranderd in output waarmee
+het chaotische gedrag gelogd kan worden zodat het bestudeerd kan
+worden. Bij elke passage worden de snelheid (met teken) en de tijd
+sinds de vorige passage uitgestuurd. Logging levert een kommagescheiden
+bestand op dat verder verwerkt kan worden.<br>
+<br>
+(*) Ook tijdens de normale chaotische beweging kan de slinger tot
+stilstand komen in het bovenste dode punt. Ondanks dat dat een labiel
+evenwicht is kan 'ie er blijven staan, omdat er een beetje stilstaande
+wrijving in de lagers zit.<br>
+<br>
+</div>
+
+
+<br>
+
+
+<br>
+
+
+</body></html>
